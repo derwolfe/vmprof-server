@@ -30,3 +30,8 @@ edit /etc/postgresql/9.X/main/pg_hba.conf
 ## deployment
 
     fab deploy -H vmprof.com -u {USER}
+
+## containers
+
+Use containers to run a linked postgres instance.
+Docker compose will be responsible for building and starting both containers.
