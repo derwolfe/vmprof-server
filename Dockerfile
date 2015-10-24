@@ -1,36 +1,28 @@
 FROM gliderlabs/alpine:3.2
-MAINTAINER Chris Wolfe
 
 RUN apk add --update \
     python \
     python-dev \
     py-pip \
-    build-base \
-    nginx \
+    postgresql-dev \
+    alpine-sdk \
   && pip install virtualenv \
   && rm -rf /var/cache/apk/*
 
-#WORKDIR /var/www/vmprof
 RUN mkdir -p /var/www/vmprof
 
 COPY . /var/www/vmprof
 
-# setup nginx
-RUN ln -s /var/www/vmprof/nginx.conf /etc/nginx/sites-enabled/
-
 RUN virtualenv /virtualenv && \
     /virtualenv/bin/pip install --upgrade pip && \
-    /virtualenv/bin/pip install uwsgi && \
-    /virtualenv/bin/pip install -r vmprof/requirements/production.txt
+    /virtualenv/bin/pip install -r /var/www/vmprof/requirements/docker.txt
 
 RUN mkdir -p /var/www/vmprof/static
 
 RUN cd /var/www/vmprof/static && \
-    virtualenv/vmprof/manage.py collectstatic -c --noinput && \
-    virtualenv/vmprof/manage.py migrate && \
-    virtualenv/bin/uwsgi--ini vmprof/uwsgi.ini
-
-# nginx also needs to get going!.
+    /virtualenv/bin/python /var/www/vmprof/manage.py collectstatic -c --noinput && \
+    /virtualenv/bin/python /var/www/vmprof/manage.py migrate && \
+    /virtualenv/bin/twistd web --port 8888 --wsgi /var/www/vmprof/server/wsgi.py
 
 # start nginx
 EXPOSE 8888

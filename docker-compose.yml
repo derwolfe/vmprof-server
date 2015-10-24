@@ -6,5 +6,5 @@ web:
    - .:/app
   links:
    - postgres
-redis:
-  image: postgres-9
+postgres:
+  image: postgres
