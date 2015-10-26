@@ -1,11 +1,16 @@
 web:
-  build: .
+  build: ./app
   ports:
     - "8888:8888"
   volumes:
     - .:/app
   links:
     - postgres:postgres
+
+nginx:
+  build: ./nginx/
+  ports:
+    - "8080:8080"
 
 postgres:
   image: postgres
