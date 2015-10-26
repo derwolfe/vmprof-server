@@ -21,10 +21,9 @@ RUN mkdir -p /var/www/vmprof/static
 
 ENV DJANGO_SETTINGS_MODULE=settings.docker
 
-RUN cd /var/www/vmprof/static && \
+CMD cd /var/www/vmprof/static && \
     /virtualenv/bin/python /var/www/vmprof/manage.py collectstatic -c --noinput && \
-    /virtualenv/bin/python /var/www/vmprof/manage.py migrate
-
-CMD /virtualenv/bin/twistd -n web --port 8888 --wsgi /var/www/vmprof/server/wsgi.py
+    /virtualenv/bin/python /var/www/vmprof/manage.py migrate && \
+    /virtualenv/bin/twistd -n web --port 8888 --wsgi /var/www/vmprof/server/wsgi.py
 
 # ENTRYPOINT ["/virtualenv/bin/python", "/var/www/vmprof/tweb.py"]
